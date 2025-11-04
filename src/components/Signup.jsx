@@ -1,76 +1,46 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        alert("Registration successful! Please login.");
-        navigate("/auth");
-      } else {
-        alert(data.error);
-      }
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/auth/register`,
+        { name, email, password }
+      );
+      console.log("Signup successful:", response.data);
     } catch (error) {
-      console.error("Signup error:", error);
+      console.error("Signup failed:", error.response?.data || error.message);
     }
   };
 
   return (
-    <div className="signup">
-      <div className="auth-card">
-        <h2>Sign Up</h2>
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="auth-input"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="auth-input"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="auth-input"
-              required
-            />
-          </div>
-          <button type="submit" className="auth-button">Sign Up</button>
-        </form>
-        <div className="auth-footer">
-          <p>
-            Already have an account? <a href="#" onClick={() => window.location.href = '/auth?tab=login'}>Login</a>
-          </p>
-        </div>
-      </div>
-    </div>
+    <form onSubmit={handleSignup}>
+      <input
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button type="submit">Sign Up</button>
+    </form>
   );
 };
 
